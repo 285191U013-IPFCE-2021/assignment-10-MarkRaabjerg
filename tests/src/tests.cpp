@@ -19,15 +19,15 @@ TEST_CASE("linked_list")
 				   make_node (3,
 					      make_node (4,
 							  make_node (5,
-								    &SENTINEL_node)))));
+								    NULL)))));
 
 	sum = sum_squares (ns);	/* sum should equal 55 */
   	REQUIRE(sum==55);
-  	free_list(ns);
+  	free_list(&ns);
 	sum=sum_squares(ns);
 	REQUIRE(sum==0);
 
-	ns = make_node (1,&SENTINEL_node);
+	ns = make_node (1,NULL);
 	sum=sum_squares(ns);
 	REQUIRE(sum==1);
 	
@@ -36,18 +36,18 @@ TEST_CASE("linked_list")
 	node *mns = map (ns, square);
 	sum=sum_squares(ns);
 	REQUIRE(sum==1);
-	free_list(ns);
+	free_list(&ns);
   	ns = make_node (1,
 			make_node (2,
 				   make_node (3,
-					      &SENTINEL_node)));
+					      NULL)));
 	//ns is 1->2->3
   	mns = map (ns, square);
 	//ns is 1->4->9
-	sum=sum_squares(ns);
+	sum=sum_squares(mns);
 	//1+16+81 = 98
 	REQUIRE(sum==98);
-	free_list(ns);
+	free_list(&ns);
 }
 
 TEST_CASE("btree")

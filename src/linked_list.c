@@ -21,36 +21,71 @@ node *make_node (int v, node * q)
 }
 
 /* free all nodes in the list p */
-void free_list (node * p)
+void free_list (node ** p)
 {
-  node *q = p;
+  node *q = *p;
   while (q != &SENTINEL_node)
     {
       node *t = q->next;
       free (q);
       q = t;
     }
+    (*p) = NULL;
 }
 
 
 /* print list to console */
 void print_list (node * p)
+
+// printing our value and goes to the next element in the list
+
 {
-    // Add your code for exercise 1
-    // There is NO testcode for this
+  if (p->next!=NULL)
+  {
+    printf("%d", p->value);
+    print_list (p->next);
+  }
+  else
+  {
+    printf("%d", p->value);
+  }
+
 }
 
 int sum_squares (node * p)
+
+// making a recrusiv funktion for squaring our linked list.
+
 {
-    // Add your code for excercise 2
-    // You can find the tests in tests.cpp
-    return -1;
+if (p->next!=NULL)
+{
+  return ((p->value*p->value)+sum_squares(p->next));
+}
+else
+{
+  return(p->value*p->value);
+}
 }
 
 node *map (node * p, int (*f) (int))
+
+//mapping our new list in a linked list
+
 {
-    // Add your code for excercise 3
-    return NULL;
+if (p==NULL)
+{
+  return NULL;
+}
+else
+{
+  node *item = malloc(sizeof(node));
+  item->value=f(p->value);
+  item->next=map (p->next, f);
+  return item;
+}
+
+
+return NULL;
 }
 
 
