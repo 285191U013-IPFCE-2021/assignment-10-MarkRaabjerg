@@ -6,192 +6,86 @@
 #include<stdbool.h>
 
 
+int min_of_right(struct tree_node *t)
+
+//finding the smallest of the biggest value
+
+{
+  struct tree_node * temp = t;
+      while (t -> left != NULL)
+      {
+        temp = t -> left;
+      }
+  return temp -> item;
+} 
+
+
+
+
 struct tree_node * Insert (int x, struct tree_node *t)
 {
-  if (Empty(t))  //it  the list is empty then we just insert our leaf on our NULL pointer t
-  {
-    struct tree_node *leaf = malloc(sizeof(struct tree_node));
-      leaf->item=x;
-      leaf->left=NULL;
-      leaf->right=NULL;
 
-    t->left=leaf;
-    t->right=leaf;
+  struct tree_node * new_x = malloc(sizeof(struct tree_node));
 
-  }
-  if (Empty(t)==false)
+  new_x -> item = x;
+  new_x -> right = NULL;
+  new_x -> left = NULL;
 
-  //if the tree is not empty then we have to place the new node at the right point.
-  //we tjek if x is greater or smaller than current->item where current is the pointer that runs thrugh the code.
-  //if current finds the right place then we allocate memory to the new node.
+  if (t == NULL)    //if the tree is empty then the new tree is x
+    return new_x;
+  
+  if (x > t -> item)
+    t -> right = Insert(x , t -> right);    //when x is larger than the the current ellement
+  else 
+    t -> left = Insert(x , t -> left);    //when x is smaller than the current ellement 
 
-  {
-  struct tree_node* current = t->left;
-  bool isinsert = false;
-
-  while (isinsert==false)
-  {
-  if (current->item>x)
-  {
-    if (current->left!=NULL)
-    {
-      current=current->left;
-    }
-    else
-    {
-      struct tree_node *leaf = malloc(sizeof(struct tree_node));
-      isinsert=true;
-      current->left=leaf;
-      leaf->item=x;
-      leaf->left=NULL;
-      leaf->right=NULL;
-    }
-  } 
-  if (current->item<x)
-  {
-    if (current->right!=NULL)
-    {
-      current=current->right;
-    }
-    else
-    {
-      struct tree_node *leaf = malloc(sizeof(struct tree_node));
-      isinsert=true;
-      current->right=leaf;
-      leaf->item=x;
-      leaf->left=NULL;
-      leaf->right=NULL;
-    }
-  }
-  }
-  return NULL;
-}
+  return t;     //returns the tree with item x inside
 }
 
 struct tree_node * Remove (int x, struct tree_node *t)
 {
+  if (t == NULL)    //if the tree is empty we return the empty tree because we cant remove anything
+    return t;
 
-  struct tree_node *current = t;
-  struct tree_node *forcurrent = t;
-  struct tree_node *root = t;
-  struct tree_node *forroot = t;
-
-// this is some helping pointers so we dont have to change t.
-  
-
-  int i=0;
-
-  while (i==0)  //this while loop finds the node we want to remove.
-  {
-
-    if (current->item==x)
+  if (x > t->item) 
     {
-      i=1;
-    }
-  
-    if (current->item>x)
+      t -> right = Remove (x , t -> right); //serching for a pointer to the node that holds x
+    }                                       
+  else if (x < t -> item)
     {
-      forcurrent=current;
-      current=current->left;
+      t -> left = Remove (x , t -> left);
     }
-    
-    if (current->item<x)
-    {
-      forcurrent=current;
-      current=current->right;
+  else if (t -> left == NULL && t -> right == NULL)     // if x has no children
+    {                                               
+      free(t);
+      return NULL;
     }
-  }
-
-  if (current->left==NULL && current->right==NULL)
-
-  //now we remove x if x have 0 children 
-
-  {
-    if (forcurrent->item<x)
-    {
-      forcurrent->right=NULL;
-    }
-    else if (forcurrent->item>x)
-    {
-      forcurrent->left=NULL;
-    }
-    free (current);
-    
-  }
-
-  if (current->left !=NULL && current->right==NULL)
-
-  //here we remove x if x only have a left child
-
-  {
-
-    if (forcurrent->item>x)
-    {
-      forcurrent->left=current->left;
-    }
-
-    else if (forcurrent->item<x)
-    {
-      forcurrent->right=current->left;
-    }
-  free (current);
-  return 0;
-  }
-
-  if (current->left==NULL && current->right!=NULL)
-
-  //here we remove x if x only have a right child
-
-  {
-    if (forcurrent->item>x)
-    {
-      forcurrent->left=current->right;
-    }
-    if (forcurrent->item<x)
-    {
-      forcurrent->right=current->right;
-    }
-  free (current);
-  return 0;
-  }
-
-  if (current->left!=NULL && current->right!=NULL)
-
-  //here we remove x if x have two children.
-
-  {
-
-    root=current->left;
-
-      if (root->right==NULL)
+      else if (t->right == NULL || t->left == NULL)
       {
-        current->item=root->item;
-        current->left=root->left;
-        free (root);
-      }
-      if (root->right!=NULL)
-      {
-        while (root->right!=NULL)
+        struct tree_node * temp_t = NULL;
+        if (t -> right == NULL)
         {
-          forroot=root;
-          root=root->right;
+          temp_t = t -> left;
         }
-    
-        forroot->right=root->left;
-        current->item=root->item;
-        free (root);
+        else if (t -> left == NULL)
+          temp_t = t -> right;
+        free (t);
+        return temp_t;
+      } 
+     else 
+      {
+        int min_largest = min_of_right (t->right);          //if x has children we use min_of_right to find the new position for x
+        t -> item = min_largest;                        
+        t -> right = Remove(t -> item, t -> right);     
       }
- }
+  return t;
 }
 
 int Contains (int x, struct tree_node *t)
 {
-
-  while (1)
-  {
     if (t==NULL)   //if the list is empty then x in not in the list
     {
-      return false;
+      return 0;
     }
 
     if (t->item==x)  //if t holds x then x is in the list.
@@ -199,40 +93,36 @@ int Contains (int x, struct tree_node *t)
       return 1;
     }
     
-    //we go down the rigt way till we get to the place where x must be. this is a loop where we relocate the pointer t every time we go thugh the loop.
+    //we go down the right way till we get to the place where x must be. this is a loop where we relocate the pointer t every time we go thugh the loop.
 
     if (t->item>x)
     {
-      t=t->left;
+      return Contains(x, t->left);
     }
     
     if (t->item<x)
     {
-      t=t->right;
+      return Contains(x, t->right);
     }
-  }
 return 0;
 }
 
 
 struct tree_node * Initialize (struct tree_node *t)
 
-//making a "NULL node" we will later meke this point to the first element in the list.
+//making a "NULL pointer" we will later meke this point to the first element in the list.
 
 {
-  struct tree_node *d = malloc(sizeof(struct tree_node));
-    d->item=-1;
-    d->left=NULL;
-    d->right=NULL;
-  return d;
+t=NULL;
+return t;
 }
 
 int Empty (struct tree_node *t)
 {
 
-//if our pointer have 0 children then the list must be empty because we start with a NULL pointer
+//if our pointer is NULL the list must be empty
 
-if (t->left==NULL && t->right==NULL)
+if (t == NULL)
   {
     return 1;    
   }
